@@ -29,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     private boolean mIsPlay = false;//是否正在播放录像
     private MediaRecorder mRecorder;
     private SurfaceHolder mSurfaceHolder;
-    private ImageView mImageView;
+
     private Camera camera;
     private MediaPlayer mediaPlayer;
     private String path;
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
         setContentView(R.layout.activity_main);
 
         mSurfaceview =  findViewById(R.id.surfaceview);
-        mImageView = findViewById(R.id.imageview);
+
         mBtnStartStop = findViewById(R.id.btnStartStop);//录制或停止
         mBtnPlay =  findViewById(R.id.btnPlayVideo);
         textView = findViewById(R.id.text);
@@ -71,7 +71,6 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                 }
                 if (!mStartedFlg) {//判断是否在录像
                     handler.postDelayed(runnable, 1000);
-                    mImageView.setVisibility(View.GONE);
                     if (mRecorder == null) {
                         mRecorder = new MediaRecorder();
                     }
@@ -150,7 +149,6 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
                     return;
                 }
                 mIsPlay = true;
-                mImageView.setVisibility(View.GONE);
                 if (mediaPlayer == null) {
                     mediaPlayer = new MediaPlayer();
                 }
@@ -211,7 +209,6 @@ public class MainActivity extends AppCompatActivity implements SurfaceHolder.Cal
     protected void onResume() {
         super.onResume();
         if (!mStartedFlg) {
-            mImageView.setVisibility(View.VISIBLE);
         }
     }
 

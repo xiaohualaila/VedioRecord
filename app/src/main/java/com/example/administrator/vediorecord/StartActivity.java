@@ -49,7 +49,7 @@ public class StartActivity  extends AppCompatActivity {
     public void requestPhotoSuccess() {
         Log.e(TAG, "requestPhotoSuccess: ");
         //成功之后的处理
-        handler.postDelayed(() -> startActivity(new Intent(StartActivity.this,FragmentActivity.class)),3000);
+        handler.postDelayed(() -> startActivity(new Intent(StartActivity.this,MainActivity4.class)),3000);
 
     }
 
