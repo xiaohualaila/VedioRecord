@@ -13,10 +13,11 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.administrator.vediorecord.util.MyUtil;
+
+import com.iceteck.silicompressorr.VideoCompress;
 
 import java.io.File;
 
@@ -25,9 +26,11 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 //https://www.jb51.net/article/141101.htm
 // https://www.jb51.net/article/106594.htm
+
+//https://blog.csdn.net/qq_36421691/article/details/79113392
 public class MainActivity4 extends AppCompatActivity implements SurfaceHolder.Callback ,View.OnClickListener{
 
-    private static final String TAG = "MainActivity2";
+    private static final String TAG = "MainActivity4";
     private SurfaceView mSurfaceview;
     private Button mBtnStartStop;
     private Button mBtnPlay;
@@ -38,10 +41,14 @@ public class MainActivity4 extends AppCompatActivity implements SurfaceHolder.Ca
     private Camera camera;
     private MediaPlayer mediaPlayer;
     private String path;
+    private String path2;
     private TextView textView;
     private int text = 0;
     private Unbinder unbinder;
 
+
+    private long startTime;
+    private long endTime;
     private Handler handler = new Handler();
     private Runnable runnable = new Runnable() {
         @Override
@@ -68,14 +75,14 @@ public class MainActivity4 extends AppCompatActivity implements SurfaceHolder.Ca
         // setType必须设置，要不出错.
         holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
-        mRecorder = new MediaRecorder();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                startRecord();
-                handler.postDelayed(runnable, 1000);
-            }
-        },1000);
+
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                startRecord();
+//                handler.postDelayed(runnable, 1000);
+//            }
+//        },1000);
     }
 
     @Override
@@ -206,6 +213,10 @@ public class MainActivity4 extends AppCompatActivity implements SurfaceHolder.Ca
                                 camera.release();
                                 camera = null;
                             }
+
+                            //压缩视频
+                            compressVideo();
+
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -242,5 +253,55 @@ public class MainActivity4 extends AppCompatActivity implements SurfaceHolder.Ca
         unbinder.unbind();
     }
 
+    private void compressVideo() {
+        path2 = MyUtil.getSDPath();
+        if (path2 != null) {
+            File dir = new File(path2 + "/recordtest");
+            if (!dir.exists()) {
+                dir.mkdir();
+            }
+            path2 = dir + "/" + MyUtil.getDate() + "sy.mp4";
 
+            VideoCompress.compressVideoLow(path, path2, new VideoCompress.CompressListener() {
+                @Override
+                public void onStart() {
+                    startTime = System.currentTimeMillis();
+
+                    Log.i(TAG, "开始时间" + startTime);
+
+                }
+
+                @Override
+                public void onSuccess() {
+                    endTime = System.currentTimeMillis();
+
+                    Log.i(TAG, "结束时间 = " + endTime);
+                    Log.i(TAG, "压缩后大小 = " + getFileSize(path2));
+                }
+
+                @Override
+                public void onFail() {
+                    endTime = System.currentTimeMillis();
+
+                    Log.i(TAG, "失败时间 = " + endTime);
+                }
+
+                @Override
+                public void onProgress(float percent) {
+                    Log.i(TAG, String.valueOf(percent) + "%");
+                }
+
+            });
+        }
+    }
+
+        private String getFileSize(String path) {
+            File f = new File(path);
+            if (!f.exists()) {
+                return "0 MB";
+            } else {
+                long size = f.length();
+                return (size / 1024f) / 1024f + "MB";
+            }
+        }
 }
